@@ -96,7 +96,7 @@ server.route({
     path: '/slack-respond',
     handler: async (request, h) => {
 
-		const { response_url } = request.payload
+		const { response_url , original_message } = request.payload
 
 		console.log(request.payload);
 
@@ -104,7 +104,7 @@ server.route({
 			"text": "A new Ambassador has been approved!",
 			"attachments": [
 				{
-					"text": `${data.community} / ${data.name} \n\n from ${data.city} \n\n code ${data.code} \n\n ${data.description}`,
+					"text": original_message.attachments.text,
 					"fallback": "Sorry :/",
 					"callback_id": "ambassador_approve",
 					"color": "#3AA3E3",
