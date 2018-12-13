@@ -38,7 +38,10 @@ const init = async () => {
 
 server.route({
     method: 'POST',
-    path: '/register',
+	path: '/register',
+	options: {
+		cors: true
+	},
     handler: async (request, h) => {
 
 		const id = uuid();
@@ -93,7 +96,10 @@ server.route({
 
 server.route({
     method: 'POST',
-    path: '/slack-respond',
+	path: '/slack-respond',
+	options: {
+		cors: true
+	},
     handler: async (request, h) => {
 		const { payload } = request.payload
 
