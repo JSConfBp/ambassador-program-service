@@ -95,8 +95,9 @@ server.route({
     method: 'POST',
     path: '/slack-respond',
     handler: async (request, h) => {
+		const { payload } = request.payload
 
-		const data = typeof request.payload === 'string' ? JSON.parse(request.payload) : request.payload;
+		const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
 		const { response_url , original_message } = data
 
