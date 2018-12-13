@@ -8,6 +8,6 @@ module.exports = function (community, city) {
 		.split(' ')
 		.reduce((str, part) => { return str + part.slice(0,2) }, '')
 
-	return part + city
+	return part
 		.toUpperCase().slice(0,2) + 'JSC19'
 }
