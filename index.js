@@ -104,7 +104,7 @@ server.route({
 		console.log(data);
 
 		const slackData = {
-			"text": `A new Ambassador has been approved! \n\n${original_message.attachments.text}`,
+			"text": `A new Ambassador has been approved! \n\n${original_message.attachments[0].text}`,
 			"replace_original": "true",
 			trigger_id
 		}
