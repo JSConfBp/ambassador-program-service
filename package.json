@@ -22,7 +22,10 @@
   "dependencies": {
     "boom": "^7.3.0",
     "hapi": "^17.8.1",
-    "nodemon": "^1.18.8"
+    "isomorphic-unfetch": "^3.0.0",
+    "nodemon": "^1.18.8",
+    "redis": "^2.8.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "dotenv": "^6.2.0"
