@@ -99,22 +99,14 @@ server.route({
 
 		const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
-		const { response_url , original_message } = data
+		const { response_url , original_message, trigger_id } = data
 
 		console.log(data);
 
 		const slackData = {
-			"text": "A new Ambassador has been approved!",
-			"attachments": [
-				{
-					"text": original_message.attachments.text,
-					"fallback": "Sorry :/",
-					"callback_id": "ambassador_approve",
-					"color": "#3AA3E3",
-					"attachment_type": "default",
-					"replace_original": "true"
-				}
-			]
+			"text": `A new Ambassador has been approved! \n\n${original_message.attachments.text}`,
+			"replace_original": "true",
+			trigger_id
 		}
 
 		fetch(response_url, {
