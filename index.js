@@ -56,7 +56,7 @@ server.route({
 			"text": "A new Ambassador has applied!",
 			"attachments": [
 				{
-					"text": `**${data.community}** / ${data.name} \n\n from ${data.city} \n\n code **${data.code}** \n\n ${data.description}`,
+					"text": `*${data.community}* / ${data.name} \n\n from _${data.city}_ \n\n code *${data.code}* \n\n ${data.description}`,
 					"fallback": "Sorry :/",
 					"callback_id": "ambassador_approve",
 					"color": "#3AA3E3",
@@ -104,7 +104,7 @@ server.route({
 		console.log(data);
 
 		const slackData = {
-			"text": `**A new Ambassador has been approved!** \n\n${original_message.attachments[0].text}`,
+			"text": `*A new Ambassador has been _approved_!* \n\n${original_message.attachments[0].text}`,
 			"replace_original": "true",
 			trigger_id
 		}
