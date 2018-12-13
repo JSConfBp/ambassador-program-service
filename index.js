@@ -100,6 +100,8 @@ server.route({
 
 		const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
+		console.log(data);
+		
 		const { actions, response_url , original_message, trigger_id } = data
 
 		const action = getAction(actions)
@@ -108,7 +110,6 @@ server.route({
 
 			const id = action.value
 
-			console.log(data);
 
 			const slackData = {
 				"text": `*A new Ambassador has been _approved_!* \n\n${original_message.attachments[0].text}`,
