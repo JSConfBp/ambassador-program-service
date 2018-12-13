@@ -96,9 +96,11 @@ server.route({
     path: '/slack-respond',
     handler: async (request, h) => {
 
-		const { response_url , original_message } = request.payload
+		const data = typeof request.payload === 'string' ? JSON.parse(request.payload) : request.payload;
 
-		console.log(request.payload);
+		const { response_url , original_message } = data
+
+		console.log(data);
 
 		const slackData = {
 			"text": "A new Ambassador has been approved!",
