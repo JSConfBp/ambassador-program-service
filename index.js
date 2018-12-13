@@ -48,6 +48,9 @@ server.route({
 		const code = getCode(request.payload.community, request.payload.city || '')
 		const data = Object.assign({}, request.payload, { id, code })
 
+console.log(request.payload);
+
+
 //		await redisSet(id, data)
 
 		// save to db
