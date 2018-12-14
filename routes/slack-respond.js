@@ -2,7 +2,7 @@ const fetch = require('isomorphic-unfetch')
 const getAction = require('../getAction')
 
 
-const approveAction = function (response_url, text, trigger_id) {
+const approveAction = async function (response_url, text, trigger_id) {
 	const slackData = {
 		"text": `*A new Ambassador has been _approved_!* \n\n${text}`,
 		"replace_original": "true",
