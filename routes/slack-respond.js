@@ -31,8 +31,9 @@ const handleInteractiveMessage = async function (data) {
 
 	if (action.name === 'approve_code') {
 		const id = action.value
+		const text = original_message.attachments[0].text
 
-		await approveAction(response_url, original_message.attachments[0].text, trigger_id)
+		await approveAction(response_url, text, trigger_id)
 	}
 
 	if (action.name === 'edit_code') {
@@ -43,7 +44,10 @@ const handleInteractiveMessage = async function (data) {
 				"callback_id": "edited_code",
 				"title": "Edit Discount Code",
 				"submit_label": "Submit",
-				"state": id,
+				"state": {
+					id,
+					trigger_id
+				},
 				"elements": [
 					{
 						"type": "text",
