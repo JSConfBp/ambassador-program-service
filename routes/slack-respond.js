@@ -33,9 +33,6 @@ module.exports = async (request, h) => {
 	if (action.name === 'edit_code') {
 		const id = action.value
 
-
-
-
 		const form = {
 			"callback_id": "edited_code",
 			"title": "Request a Ride",
@@ -55,14 +52,14 @@ module.exports = async (request, h) => {
 			]
 		  }
 
-		  const res = await fetch(`https://slack.com/api/dialog.open?trigger_id=${trigger_id}`, {
-				method: 'post',
-				body: JSON.stringify(form),
-				headers: {
-					"Content-Type": "application/json; charset=utf-8",
-					"Authorization": process.env.SLACK_TOKEN
-				}
-			})
+		const res = await fetch(`https://slack.com/api/dialog.open?trigger_id=${trigger_id}`, {
+			method: 'post',
+			body: JSON.stringify(form),
+			headers: {
+				"Content-Type": "application/json; charset=utf-8",
+				"Authorization": `Bearer ${process.env.SLACK_TOKEN}`
+			}
+		})
 
 
 			console.log(await res.json());
