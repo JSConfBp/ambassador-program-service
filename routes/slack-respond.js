@@ -20,10 +20,14 @@ const approveAction = async function (response_url, text, trigger_id) {
 }
 
 const handleDialogSubmission = async function (server, data) {
-	const { state } = data
+	const { state, submission } = data
 	const { id, trigger_id, response_url } = JSON.parse(state)
 
-	const storedData = JSON.parse(await server.methods.redisGet(id))
+	const storedData = await server.methods.redisGet(id)
+
+	storedData.code = submission.discount_code
+
+	await server.methods.redisSet(id, storedData)
 
 	await approveAction(response_url, createAmbassadorText(storedData), trigger_id)
 }
@@ -33,7 +37,7 @@ const handleInteractiveMessage = async function (server, data) {
 	const action = getAction(actions)
 	const id = action.value
 
-	const storedData = JSON.parse(await server.methods.redisGet(id))
+	const storedData = await server.methods.redisGet(id)
 
 	if (action.name === 'approve_code') {
 		const text = createAmbassadorText(storedData)
