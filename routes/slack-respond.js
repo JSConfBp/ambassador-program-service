@@ -54,7 +54,8 @@ const handleInteractiveMessage = async function (data) {
 					{
 						"type": "text",
 						"label": "Discount Code",
-						"name": "discount_code"
+						"name": "discount_code",
+						value: 'FOO'
 					}
 				]
 			}
