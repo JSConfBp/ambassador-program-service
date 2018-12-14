@@ -40,7 +40,7 @@ server.method({
 server.method({
     name: 'redisGet',
     method: async (id) => {
-		return await JSON.parse(redisGet(id))
+		return JSON.parse(await redisGet(id))
 	}
 });
 
