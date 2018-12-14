@@ -20,7 +20,8 @@ const approveAction = async function (response_url, text, trigger_id) {
 }
 
 const handleDialogSubmission = async function (data) {
-	const { actions, response_url , original_message, trigger_id } = data
+	const { response_url , state } = data
+	const { id, trigger_id } = JSON.parse(state)
 
 	await approveAction(response_url, 'Foo', trigger_id)
 }
