@@ -83,10 +83,7 @@ module.exports = async (request, h) => {
 
 	console.log(data);
 
-
-	//dialog_submission
-
-	const { type, actions, response_url , original_message, trigger_id } = data
+	const { type } = data
 
 	if ('dialog_submission' === type) {
 		await handleDialogSubmission(server, data)
