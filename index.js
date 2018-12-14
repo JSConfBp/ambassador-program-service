@@ -37,11 +37,7 @@ server.method({
 
 server.method({
     name: 'redisGet',
-    method: redisGet,
-	cache: {
-		expiresIn: 1000,
-		generateTimeout: 100
-	}
+    method: redisGet
 });
 
 server.route({
