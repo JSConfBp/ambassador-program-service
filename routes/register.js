@@ -13,7 +13,7 @@ module.exports = async (request, h) => {
 	const code = getCode(payload.community, payload.city || '')
 	const data = Object.assign({}, payload, { id, code })
 
-	await server.method.redisSet(id, data)
+	await server.methods.redisSet(id, data)
 
 	const slackData = {
 		"text": "A new Ambassador has applied!",
