@@ -35,22 +35,24 @@ module.exports = async (request, h) => {
 
 		const form = {
 			trigger_id,
-			"callback_id": "edited_code",
-			"title": "Request a Ride",
-			"submit_label": "Request",
-			"state": "Limo",
-			"elements": [
-			  {
-				"type": "text",
-				"label": "Pickup Location",
-				"name": "loc_origin"
-			  },
-			  {
-				"type": "text",
-				"label": "Dropoff Location",
-				"name": "loc_destination"
-			  }
-			]
+			dialog: {
+				"callback_id": "edited_code",
+				"title": "Request a Ride",
+				"submit_label": "Request",
+				"state": "Limo",
+				"elements": [
+				  {
+					"type": "text",
+					"label": "Pickup Location",
+					"name": "loc_origin"
+				  },
+				  {
+					"type": "text",
+					"label": "Dropoff Location",
+					"name": "loc_destination"
+				  }
+				]
+			}
 		  }
 
 		const res = await fetch(`https://slack.com/api/dialog.open?trigger_id=${trigger_id}`, {
@@ -69,5 +71,5 @@ module.exports = async (request, h) => {
 
 	}
 
-	return 'OK'
+	return ''
 }
