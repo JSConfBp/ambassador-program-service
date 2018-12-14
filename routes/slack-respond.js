@@ -23,7 +23,7 @@ const handleDialogSubmission = async function (server, data) {
 	const { state } = data
 	const { id, trigger_id, response_url } = JSON.parse(state)
 
-	const storedData = await server.methods.redisGet(id)
+	const storedData = JSON.parse(await server.methods.redisGet(id))
 
 	await approveAction(response_url, createAmbassadorText(storedData), trigger_id)
 }
@@ -33,7 +33,7 @@ const handleInteractiveMessage = async function (server, data) {
 	const action = getAction(actions)
 	const id = action.value
 
-	const storedData = await server.methods.redisGet(id)
+	const storedData = JSON.parse(await server.methods.redisGet(id))
 
 	if (action.name === 'approve_code') {
 		const text = createAmbassadorText(storedData)
