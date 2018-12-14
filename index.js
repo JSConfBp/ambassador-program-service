@@ -32,16 +32,12 @@ const redisGet = promisify(redisClient.get).bind(redisClient)
 
 server.method({
     name: 'redisSet',
-    method: async (id, value) => {
-		return await redisSet(id, JSON.stringify(value))
-	}
+    method: async (id, value) => await redisSet(id, JSON.stringify(value))
 });
 
 server.method({
     name: 'redisGet',
-    method: async (id) => {
-		return JSON.parse(await redisGet(id))
-	}
+    method: async (id) => JSON.parse(await redisGet(id))
 });
 
 server.route({
