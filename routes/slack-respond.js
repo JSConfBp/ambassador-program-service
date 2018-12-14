@@ -44,10 +44,10 @@ const handleInteractiveMessage = async function (data) {
 				"callback_id": "edited_code",
 				"title": "Edit Discount Code",
 				"submit_label": "Submit",
-				"state": {
+				"state": JSON.stringify({
 					id,
 					trigger_id
-				},
+				}),
 				"elements": [
 					{
 						"type": "text",
