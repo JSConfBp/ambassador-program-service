@@ -34,6 +34,7 @@ module.exports = async (request, h) => {
 		const id = action.value
 
 		const form = {
+			trigger_id,
 			"callback_id": "edited_code",
 			"title": "Request a Ride",
 			"submit_label": "Request",
