@@ -18,8 +18,6 @@ const server = Hapi.server({
     host: '0.0.0.0'
 });
 
-
-/*
 let redisClient
 
 if(process.env.NODE_ENV !== "production") {
@@ -41,12 +39,10 @@ server.method({
     name: 'redisGet',
     method: redisGet,
 	cache: {
-		expiresIn: 2000,
+		expiresIn: 1000,
 		generateTimeout: 100
 	}
 });
-
-*/
 
 server.route({
     method: 'POST',

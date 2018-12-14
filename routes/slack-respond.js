@@ -1,6 +1,6 @@
 const fetch = require('isomorphic-unfetch')
 const getAction = require('../getAction')
-
+const createAmbassadorText = require('../createAmbassadorText')
 
 const approveAction = async function (response_url, text, trigger_id) {
 	const slackData = {
@@ -19,21 +19,24 @@ const approveAction = async function (response_url, text, trigger_id) {
 	})
 }
 
-const handleDialogSubmission = async function (data) {
+const handleDialogSubmission = async function (server, data) {
 	const { state } = data
 	const { id, trigger_id, response_url } = JSON.parse(state)
 
-	await approveAction(response_url, 'Foo', trigger_id)
+	const storedData = await server.method.redisGet(id)
+
+	await approveAction(response_url, createAmbassadorText(storedData), trigger_id)
 }
 
-const handleInteractiveMessage = async function (data) {
-	const { actions, response_url , original_message, trigger_id } = data
+const handleInteractiveMessage = async function (server, data) {
+	const { actions, response_url, trigger_id } = data
 	const action = getAction(actions)
+	const id = action.value
+
+	const storedData = await server.method.redisGet(id)
 
 	if (action.name === 'approve_code') {
-		const id = action.value
-		const text = original_message.attachments[0].text
-
+		const text = createAmbassadorText(storedData)
 		await approveAction(response_url, text, trigger_id)
 	}
 
@@ -55,7 +58,7 @@ const handleInteractiveMessage = async function (data) {
 						"type": "text",
 						"label": "Discount Code",
 						"name": "discount_code",
-						value: 'FOO'
+						value: storedData.code
 					}
 				]
 			}
@@ -74,7 +77,7 @@ const handleInteractiveMessage = async function (data) {
 
 
 module.exports = async (request, h) => {
-	const { payload } = request.payload
+	const { payload, server } = request.payload
 
 	const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
@@ -86,11 +89,11 @@ module.exports = async (request, h) => {
 	const { type, actions, response_url , original_message, trigger_id } = data
 
 	if ('dialog_submission' === type) {
-		await handleDialogSubmission(data)
+		await handleDialogSubmission(server, data)
 	}
 
 	if ('interactive_message' === type) {
-		await handleInteractiveMessage(data)
+		await handleInteractiveMessage(server, data)
 	}
 
 	return ''

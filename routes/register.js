@@ -1,6 +1,7 @@
-const getCode = require('../getCode')
 const uuid = require('uuid/v4')
 const fetch = require('isomorphic-unfetch')
+const getCode = require('../getCode')
+const createAmbassadorText = require('../createAmbassadorText')
 
 module.exports = async (request, h) => {
 
@@ -12,13 +13,13 @@ module.exports = async (request, h) => {
 	const code = getCode(payload.community, payload.city || '')
 	const data = Object.assign({}, payload, { id, code })
 
-//		await server.method.redisSet(id, data)
+	await server.method.redisSet(id, data)
 
 	const slackData = {
 		"text": "A new Ambassador has applied!",
 		"attachments": [
 			{
-				"text": `*${data.community}* / ${data.name} \n\n from _${data.city}_ \n\n code *${data.code}* \n\n ${data.description}`,
+				"text": createAmbassadorText(data),
 				"fallback": "Sorry :/",
 				"callback_id": "ambassador_approve",
 				"color": "#3AA3E3",
