@@ -77,7 +77,8 @@ const handleInteractiveMessage = async function (server, data) {
 
 
 module.exports = async (request, h) => {
-	const { payload, server } = request.payload
+	const { server } = request
+	const { payload } = request.payload
 
 	const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
