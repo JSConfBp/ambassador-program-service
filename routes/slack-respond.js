@@ -65,20 +65,11 @@ module.exports = async (request, h) => {
 			})
 
 
-			console.log(res);
+			console.log(await res.json());
 
 //
 
-/*
-
-POST /api/conversations.create
-Content-type: application/json
-Authorization: Bearer xoxp-xxxxxxxxx-xxxx
-{"name":"something-urgent"}
-
-*/
-
 	}
 
-	return ''
+	return 'OK'
 }

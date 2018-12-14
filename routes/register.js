@@ -46,5 +46,5 @@ module.exports = async (request, h) => {
 		body: JSON.stringify(slackData)
 	})
 
-	return ''
+	return 'OK'
 }
