@@ -2,16 +2,22 @@ if (process.env.NODE_ENV !== 'production') {
 	require('dotenv').config()
 }
 
-const { promisify } = require('util')
 const Hapi = require('hapi')
 const Boom = require('boom')
-const uuid = require('uuid/v4')
+
+const { promisify } = require('util')
 const redis = require('redis')
-const fetch = require('isomorphic-unfetch')
+
 const port = process.env.PORT
 
-const getCode = require('./getCode')
-const getAction = require('./getAction')
+const registerRouteHandler = require('./routes/register')
+const slackRespondRouteHandler = require('./routes/slack-respond')
+
+const server = Hapi.server({
+    port,
+    host: '0.0.0.0'
+});
+
 
 /*
 let redisClient
@@ -25,17 +31,22 @@ if(process.env.NODE_ENV !== "production") {
 }
 const redisSet = promisify(redisClient.set).bind(redisClient)
 const redisGet = promisify(redisClient.get).bind(redisClient)
-*/
-const server = Hapi.server({
-    port,
-    host: '0.0.0.0'
+
+server.method({
+    name: 'redisSet',
+    method: redisSet
 });
 
-const init = async () => {
-    await server.start();
-    console.log(`Server running at: ${server.info.uri}`);
-};
+server.method({
+    name: 'redisGet',
+    method: redisGet,
+	cache: {
+		expiresIn: 2000,
+		generateTimeout: 100
+	}
+});
 
+*/
 
 server.route({
     method: 'POST',
@@ -43,50 +54,7 @@ server.route({
 	options: {
 		cors: true
 	},
-    handler: async (request, h) => {
-
-		console.log(request.payload);
-
-		const id = uuid();
-		const code = getCode(request.payload.community, request.payload.city || '')
-		const data = Object.assign({}, request.payload, { id, code })
-
-//		await redisSet(id, data)
-
-		const slackData = {
-			"text": "A new Ambassador has applied!",
-			"attachments": [
-				{
-					"text": `*${data.community}* / ${data.name} \n\n from _${data.city}_ \n\n code *${data.code}* \n\n ${data.description}`,
-					"fallback": "Sorry :/",
-					"callback_id": "ambassador_approve",
-					"color": "#3AA3E3",
-					"attachment_type": "default",
-					"actions": [
-						{
-							"name": "approve_code",
-							"text": "Approve",
-							"type": "button",
-							"value": id
-						},
-						{
-							"name": "edit_code",
-							"text": "Edit code",
-							"type": "button",
-							"value": id
-						}
-					]
-				}
-			]
-		}
-
-		await fetch(process.env.SLACK_WEBHOOK, {
-			method: 'post',
-			body: JSON.stringify(slackData)
-		})
-
-		return ''
-    }
+    handler: registerRouteHandler
 });
 
 server.route({
@@ -95,87 +63,13 @@ server.route({
 	options: {
 		cors: true
 	},
-    handler: async (request, h) => {
-		const { payload } = request.payload
-
-		const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
-
-		console.log(data);
-		
-		const { actions, response_url , original_message, trigger_id } = data
-
-		const action = getAction(actions)
-
-		if (action.name === 'approve_code') {
-
-			const id = action.value
-
-
-			const slackData = {
-				"text": `*A new Ambassador has been _approved_!* \n\n${original_message.attachments[0].text}`,
-				"replace_original": "true",
-				trigger_id
-			}
-
-			await fetch(response_url, {
-				method: 'post',
-				body: JSON.stringify(slackData)
-			})
-
-		}
-
-		if (action.name === 'edit_code') {
-			const id = action.value
-
-
-
-
-			const form = {
-				"callback_id": "edited_code",
-				"title": "Request a Ride",
-				"submit_label": "Request",
-				"state": "Limo",
-				"elements": [
-				  {
-					"type": "text",
-					"label": "Pickup Location",
-					"name": "loc_origin"
-				  },
-				  {
-					"type": "text",
-					"label": "Dropoff Location",
-					"name": "loc_destination"
-				  }
-				]
-			  }
-
-			  await fetch(`https://slack.com/api/dialog.open?trigger_id=${trigger_id}`, {
-					method: 'post',
-					body: JSON.stringify(form),
-					headers: {
-						"Content-Type": "application/json; charset=utf-8",
-						"Authorization": process.env.SLACK_TOKEN
-					}
-				})
-//
-
-/*
-
-POST /api/conversations.create
-Content-type: application/json
-Authorization: Bearer xoxp-xxxxxxxxx-xxxx
-{"name":"something-urgent"}
-
-*/
-
-		}
-
-		return ''
-    }
+    handler: slackRespondRouteHandler
 });
 
-
-
+const init = async () => {
+    await server.start();
+    console.log(`Server running at: ${server.info.uri}`);
+};
 
 init();
 
