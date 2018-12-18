@@ -12,16 +12,20 @@ module.exports = async (request, h) => {
 	form.append('redirect_uri', 'https://ambassador-program-service.herokuapp.com/google-token')
 	form.append('client_id', process.env.GOOGLE_CLIENTID)
 	form.append('client_secret', process.env.GOOGLE_SECRET)
-	form.append('scope', scope)
 	form.append('grant_type', 'authorization_code')
 
-	await fetch('https://www.googleapis.com/oauth2/v4/token', {
+
+	console.log(form.toString());
+
+	const res = await fetch('https://www.googleapis.com/oauth2/v4/token', {
 		method: 'post',
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
 		body: form
 	})
+
+	console.log(res);
 
 	return ''
 }
