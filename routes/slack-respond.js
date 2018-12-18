@@ -5,7 +5,7 @@ const titoCreateDiscount = require('../titoCreateDiscount')
 const saveToSpreadSheet = require('../saveToSpreadSheet')
 
 
-const approveAction = async function (response_url, trigger_id, data) {
+const approveAction = async function (server, response_url, trigger_id, data) {
 	const text = createAmbassadorText(data)
 	const slackData = {
 		"text": `*A new Ambassador has been _approved_!* \n\n${text}`,
@@ -24,24 +24,23 @@ const approveAction = async function (response_url, trigger_id, data) {
 			body: JSON.stringify(slackData)
 		})
 	} catch (e) {
-		await needGoogleAuth(response_url, trigger_id, data)
+		const unsaved = (await server.methods.redisGet('unsaved')) || []
+		unsaved.push({
+			trigger_id,
+			id: data.id
+		})
+		await server.methods.redisSet('unsaved', unsaved)
+		await needGoogleAuth()
 	}
 }
 
 
 const needGoogleAuth = async function (response_url, trigger_id, data) {
 
-	const callbackParams = new URLSearchParams({
-		id: data.id,
-		trigger_id
-	})
-	const callbackUrl = new URL('https://ambassador-program-service.herokuapp.com/google-api-auth');
-	callbackUrl.search = callbackParams
-
 	const authParams = new URLSearchParams({
 		prompt: 'consent',
 		response_type: 'code',
-		redirect_uri: callbackUrl.toString(),
+		redirect_uri: 'https://ambassador-program-service.herokuapp.com/google-api-auth',
 		client_id: process.env.GOOGLE_CLIENTID,
 		scope: 'https://spreadsheets.google.com/feeds/',
 		access_type: 'offline'
@@ -89,7 +88,7 @@ const handleDialogSubmission = async function (server, data) {
 	storedData.link = discountLink
 	await server.methods.redisSet(id, storedData)
 
-	await approveAction(response_url, trigger_id, storedData)
+	await approveAction(server, response_url, trigger_id, storedData)
 }
 
 
@@ -100,7 +99,7 @@ const handleInteractiveMessage = async function (server, data) {
 	const storedData = await server.methods.redisGet(id)
 
 	if (action.name === 'approve_code') {
-		await approveAction(response_url, trigger_id, storedData)
+		await approveAction(server, response_url, trigger_id, storedData)
 	}
 
 	if (action.name === 'edit_code') {
