@@ -6,10 +6,19 @@ module.exports = async (request, h) => {
 
 	console.log(query);
 
+
+	const callbackParams = new URLSearchParams({
+		//id: data.id,
+		//trigger_id
+	})
+	const callbackUrl = new URL('https://ambassador-program-service.herokuapp.com/google-token');
+	callbackUrl.search = callbackParams
+
+
 	const form = new FormData();
 
 	form.append('code', code)
-	form.append('redirect_uri', 'https://ambassador-program-service.herokuapp.com/google-token')
+	form.append('redirect_uri', callbackUrl.toString())
 	form.append('client_id', process.env.GOOGLE_CLIENTID)
 	form.append('client_secret', process.env.GOOGLE_SECRET)
 	form.append('scope', scope)

@@ -4,8 +4,8 @@ const createAmbassadorText = require('../createAmbassadorText')
 const titoCreateDiscount = require('../titoCreateDiscount')
 const saveToSpreadSheet = require('../saveToSpreadSheet')
 
-const approveAction = async function (response_url, trigger_id, data) {
 
+const approveAction = async function (response_url, trigger_id, data) {
 	const text = createAmbassadorText(data)
 	const slackData = {
 		"text": `*A new Ambassador has been _approved_!* \n\n${text}`,
@@ -31,6 +31,26 @@ const approveAction = async function (response_url, trigger_id, data) {
 
 
 const needGoogleAuth = async function (response_url, trigger_id, data) {
+
+	const callbackParams = new URLSearchParams({
+		id: data.id,
+		trigger_id
+	})
+	const callbackUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+	callbackUrl.search = callbackParams
+
+	const authParams = new URLSearchParams({
+		prompt: 'consent',
+		response_type: 'code',
+		redirect_uri: callbackUrl.toString(),
+		client_id: process.env.GOOGLE_CLIENTID,
+		scope: 'https://spreadsheets.google.com/feeds/',
+		access_type: 'offline'
+	})
+
+	const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+	authUrl.search = authParams
+
 	const slackData = {
 		"text": "A new Ambassador has applied!",
 		trigger_id,
@@ -45,7 +65,7 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
 					{
 						"type": "button",
 						"text": "Save to Spreadsheet",
-						"url": "https://flights.example.com/book/r123456"
+						"url": authUrl.toString()
 					}
 				]
 			}
@@ -73,6 +93,7 @@ const handleDialogSubmission = async function (server, data) {
 
 	await approveAction(response_url, trigger_id, storedData)
 }
+
 
 const handleInteractiveMessage = async function (server, data) {
 	const { actions, response_url, trigger_id } = data
