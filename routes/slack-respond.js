@@ -34,7 +34,7 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 			id: data.id
 		})
 		await server.methods.redisSet('unsaved', unsaved)
-		await needGoogleAuth()
+		await needGoogleAuth(response_url, trigger_id, data)
 	}
 }
 
