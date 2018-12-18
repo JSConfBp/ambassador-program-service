@@ -19,14 +19,13 @@ const approveAction = async function (response_url, trigger_id, data) {
 
 	try {
 		await saveToSpreadSheet(data)
+		await fetch(response_url, {
+			method: 'post',
+			body: JSON.stringify(slackData)
+		})
 	} catch (e) {
 		await needGoogleAuth(response_url, trigger_id, data)
 	}
-
-	await fetch(response_url, {
-		method: 'post',
-		body: JSON.stringify(slackData)
-	})
 }
 
 
@@ -47,7 +46,6 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
 		scope: 'https://spreadsheets.google.com/feeds/',
 		access_type: 'offline'
 	})
-
 	const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
 	authUrl.search = authParams
 
