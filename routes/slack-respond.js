@@ -21,6 +21,36 @@ const approveAction = async function (response_url, text, trigger_id) {
 	})
 }
 
+
+const needGoogleAuth = async function (response_url, trigger_id, id) {
+	const slackData = {
+		"text": "A new Ambassador has applied!",
+		trigger_id,
+		"attachments": [
+			{
+				"text": createAmbassadorText(data),
+				"fallback": "Sorry :/",
+				"callback_id": "ambassador_approve",
+				"color": "#3AA3E3",
+				"attachment_type": "default",
+				"actions": [
+					{
+						"type": "button",
+						"text": "Save to Spreadsheet",
+						"url": "https://flights.example.com/book/r123456"
+					}
+				]
+			}
+		]
+	}
+
+	await fetch(response_url, {
+		method: 'post',
+		body: JSON.stringify(slackData)
+	})
+}
+
+
 const handleDialogSubmission = async function (server, data) {
 	const { state, submission } = data
 	const { id, trigger_id, response_url } = JSON.parse(state)
@@ -31,10 +61,14 @@ const handleDialogSubmission = async function (server, data) {
 
 	const discountLink = await titoCreateDiscount(storedData)
 	storedData.link = discountLink
-
-	await saveToSpreadSheet(storedData)
 	await server.methods.redisSet(id, storedData)
-	await approveAction(response_url, createAmbassadorText(storedData), trigger_id)
+
+	try {
+		await saveToSpreadSheet(storedData)
+		await approveAction(response_url, createAmbassadorText(storedData), trigger_id)
+	} catch (e) {
+		await needGoogleAuth(response_url, trigger_id, id)
+	}
 }
 
 const handleInteractiveMessage = async function (server, data) {

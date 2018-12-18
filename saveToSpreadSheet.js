@@ -7,6 +7,7 @@ module.exports = async function (data) {
 		auth: process.env.GOOGLE_API_KEY
 	});
 
+	throw new Error('Need google auth')
 
 	let values = [
 		[
