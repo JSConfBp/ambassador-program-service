@@ -17,6 +17,10 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 		slackData['trigger_id'] = trigger_id
 	}
 
+	//const discountLink = await titoCreateDiscount(data)
+	//data.link = data
+	//await server.methods.redisSet(data.id, storedData)
+
 	try {
 		await saveToSpreadSheet(data)
 		await fetch(response_url, {
@@ -83,9 +87,6 @@ const handleDialogSubmission = async function (server, data) {
 	const storedData = await server.methods.redisGet(id)
 
 	storedData.code = submission.discount_code
-
-	const discountLink = await titoCreateDiscount(storedData)
-	storedData.link = discountLink
 	await server.methods.redisSet(id, storedData)
 
 	await approveAction(server, response_url, trigger_id, storedData)
