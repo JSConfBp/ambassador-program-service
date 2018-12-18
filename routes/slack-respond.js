@@ -4,7 +4,9 @@ const createAmbassadorText = require('../createAmbassadorText')
 const titoCreateDiscount = require('../titoCreateDiscount')
 const saveToSpreadSheet = require('../saveToSpreadSheet')
 
-const approveAction = async function (response_url, text, trigger_id) {
+const approveAction = async function (response_url, trigger_id, data) {
+
+	const text = createAmbassadorText(data)
 	const slackData = {
 		"text": `*A new Ambassador has been _approved_!* \n\n${text}`,
 		"replace_original": "true",
@@ -15,6 +17,12 @@ const approveAction = async function (response_url, text, trigger_id) {
 		slackData['trigger_id'] = trigger_id
 	}
 
+	try {
+		await saveToSpreadSheet(data)
+	} catch (e) {
+		await needGoogleAuth(response_url, trigger_id, data)
+	}
+
 	await fetch(response_url, {
 		method: 'post',
 		body: JSON.stringify(slackData)
@@ -22,7 +30,7 @@ const approveAction = async function (response_url, text, trigger_id) {
 }
 
 
-const needGoogleAuth = async function (response_url, trigger_id, id) {
+const needGoogleAuth = async function (response_url, trigger_id, data) {
 	const slackData = {
 		"text": "A new Ambassador has applied!",
 		trigger_id,
@@ -63,24 +71,17 @@ const handleDialogSubmission = async function (server, data) {
 	storedData.link = discountLink
 	await server.methods.redisSet(id, storedData)
 
-	try {
-		await saveToSpreadSheet(storedData)
-		await approveAction(response_url, createAmbassadorText(storedData), trigger_id)
-	} catch (e) {
-		await needGoogleAuth(response_url, trigger_id, id)
-	}
+	await approveAction(response_url, trigger_id, storedData)
 }
 
 const handleInteractiveMessage = async function (server, data) {
 	const { actions, response_url, trigger_id } = data
 	const action = getAction(actions)
 	const id = action.value
-
 	const storedData = await server.methods.redisGet(id)
 
 	if (action.name === 'approve_code') {
-		const text = createAmbassadorText(storedData)
-		await approveAction(response_url, text, trigger_id)
+		await approveAction(response_url, trigger_id, storedData)
 	}
 
 	if (action.name === 'edit_code') {
