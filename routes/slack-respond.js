@@ -1,6 +1,8 @@
 const fetch = require('isomorphic-unfetch')
 const getAction = require('../getAction')
 const createAmbassadorText = require('../createAmbassadorText')
+const titoCreateDiscount = require('../titoCreateDiscount')
+const saveToSpreadSheet = require('../saveToSpreadSheet')
 
 const approveAction = async function (response_url, text, trigger_id) {
 	const slackData = {
@@ -27,8 +29,11 @@ const handleDialogSubmission = async function (server, data) {
 
 	storedData.code = submission.discount_code
 
-	await server.methods.redisSet(id, storedData)
+	const discountLink = await titoCreateDiscount(storedData)
+	storedData.link = discountLink
 
+	await saveToSpreadSheet(storedData)
+	await server.methods.redisSet(id, storedData)
 	await approveAction(response_url, createAmbassadorText(storedData), trigger_id)
 }
 
@@ -51,7 +56,7 @@ const handleInteractiveMessage = async function (server, data) {
 			dialog: {
 				"callback_id": "edited_code",
 				"title": "Edit Discount Code",
-				"submit_label": "Submit",
+				"submit_label": "Save & Approve",
 				"state": JSON.stringify({
 					id,
 					response_url,

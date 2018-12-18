@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npx nodemon index.js",
+    "dev": "docker-compose up",
     "start": "node index.js"
   },
   "repository": {
@@ -21,6 +21,8 @@
   "homepage": "https://github.com/JSConfBp/ambassador-program-service#readme",
   "dependencies": {
     "boom": "^7.3.0",
+    "form-data": "^2.3.3",
+    "googleapis": "^36.0.0",
     "hapi": "^17.8.1",
     "isomorphic-unfetch": "^3.0.0",
     "nodemon": "^1.18.8",
