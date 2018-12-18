@@ -35,7 +35,7 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
 		id: data.id,
 		trigger_id
 	})
-	const callbackUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+	const callbackUrl = new URL('https://ambassador-program-service.herokuapp.com/google-api-auth');
 	callbackUrl.search = callbackParams
 
 	const authParams = new URLSearchParams({
