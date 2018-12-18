@@ -2,9 +2,9 @@ const fetch = require('isomorphic-unfetch')
 const FormData = require('form-data')
 
 module.exports = async (request, h) => {
-	const { server, payload, query: { code, scope} } = request
+	const { server, payload, query: { code, scope } } = request
 
-	console.log(query);
+	console.log(code, scope);
 
 	const form = new FormData();
 
