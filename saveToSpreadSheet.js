@@ -16,8 +16,6 @@ module.exports = async function (server, data) {
 
 	oauth2Client.setCredentials(tokens)
 
-console.log(tokens);
-
 	if (!tokens) {
 		// refresh!
 		throw new Error('Missing Google Auth Token')
@@ -25,11 +23,9 @@ console.log(tokens);
 
 	var sheets = google.sheets('v4');
 
-console.log(data);
-
 	let values = [
 		[
-			'foo', 124, 'bar'
+			data.community, data.city, data.code, data.description, data.name, data.email, data.link || ''
 		]
 	];
 

@@ -13,9 +13,6 @@ module.exports = async (request, h) => {
 		'scope': ''
 	})
 
-	console.log(code, scope);
-	console.log(formData);
-
 	const res = await fetch('https://www.googleapis.com/oauth2/v4/token', {
 		method: 'post',
 		headers: {
@@ -25,19 +22,11 @@ module.exports = async (request, h) => {
 	})
 
 	const tokens = await res.json()
-
-	console.log(tokens);
-
-try {
 	await server.methods.redisSet('google_tokens', tokens)
-} catch (e) {
-	console.log(e)
-}
 
 	const unsaved = await server.methods.redisGet('unsaved')
 
-console.log(unsaved);
-
+	console.log(unsaved);
 
 	for (save of unsaved) {
 		const data = await server.methods.redisGet(save.id)
@@ -48,6 +37,7 @@ console.log(unsaved);
 
 		// send responses to slack
 	}
+	await server.methods.redisSet('unsaved', [])
 
 	return ''
 }

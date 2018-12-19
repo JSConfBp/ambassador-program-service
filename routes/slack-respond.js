@@ -17,9 +17,9 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 		slackData['trigger_id'] = trigger_id
 	}
 
-	//const discountLink = await titoCreateDiscount(data)
-	//data.link = data
-	//await server.methods.redisSet(data.id, storedData)
+	const discountLink = await titoCreateDiscount(data)
+	data.link = discountLink
+	await server.methods.redisSet(data.id, storedData)
 
 	try {
 
