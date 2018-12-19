@@ -11,7 +11,8 @@ module.exports = async (request, h) => {
 		'redirect_uri': 'https://ambassador-program-service.herokuapp.com/google-token',
 		'client_id': process.env.GOOGLE_CLIENTID,
 		'client_secret': process.env.GOOGLE_SECRET,
-		'grant_type': 'authorization_code'
+		'grant_type': 'authorization_code',
+		'scope': ''
 	})
 
 
