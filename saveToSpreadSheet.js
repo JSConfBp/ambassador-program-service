@@ -7,9 +7,11 @@ module.exports = async function (server, data) {
 	//await server.methods.redisSet('google_refresh_token', tokens.refresh_token)
 	const token = await server.methods.redisGet('google_access_token')
 
+console.log(token);
+
 	if (!token) {
 		// refresh!
-		throw new Error('Need google auth')
+		throw new Error('Missing Google Auth Token')
 	}
 
 	const sheets = google.sheets({
