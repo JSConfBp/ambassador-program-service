@@ -13,7 +13,6 @@ const port = process.env.PORT
 const registerRouteHandler = require('./routes/register')
 const slackRespondRouteHandler = require('./routes/slack-respond')
 const googleAuthHandler = require('./routes/google-auth')
-const googleTokenHandler = require('./routes/google-token')
 
 const server = Hapi.server({
     port,
