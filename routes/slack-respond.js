@@ -17,9 +17,18 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 		slackData['trigger_id'] = trigger_id
 	}
 
-	const discountLink = await titoCreateDiscount(data)
-	data.link = discountLink
-	await server.methods.redisSet(data.id, data)
+	try {
+		const discountLink = await titoCreateDiscount(data)
+		data.link = discountLink
+		await server.methods.redisSet(data.id, data)
+	} catch (e) {
+		// discount code already taken
+		await createSlackDialog(data.id, response_url,trigger_id, data.code, {
+			title: "This code is already created, please update",
+			submit_label: "Update & Approve"
+		})
+		return;
+	}
 
 	try {
 
@@ -96,6 +105,52 @@ const handleDialogSubmission = async function (server, data) {
 
 	await approveAction(server, response_url, trigger_id, storedData)
 }
+/**
+ *
+ *
+ * @param {*} id
+ * @param {*} response_url
+ * @param {*} trigger_id
+ * @param {*} code
+ * @param {*} [options={}]
+ */
+const createSlackDialog = async function (id, response_url, trigger_id, code, options = {}) {
+	const {
+		title,
+		submit_label
+	} = options
+
+	const form = {
+		trigger_id,
+		dialog: {
+			"callback_id": "edited_code",
+			"title": title || "Edit Discount Code",
+			"submit_label": submit_label || "Save & Approve",
+			"state": JSON.stringify({
+				id,
+				response_url,
+				trigger_id
+			}),
+			"elements": [
+				{
+					"type": "text",
+					"label": "Discount Code",
+					"name": "discount_code",
+					value: code
+				}
+			]
+		}
+	}
+
+	fetch(`https://slack.com/api/dialog.open?trigger_id=${trigger_id}`, {
+		method: 'post',
+		body: JSON.stringify(form),
+		headers: {
+			"Content-Type": "application/json; charset=utf-8",
+			"Authorization": `Bearer ${process.env.SLACK_TOKEN}`
+		}
+	})
+}
 
 
 const handleInteractiveMessage = async function (server, data) {
@@ -109,37 +164,7 @@ const handleInteractiveMessage = async function (server, data) {
 	}
 
 	if (action.name === 'edit_code') {
-		const id = action.value
-		const form = {
-			trigger_id,
-			dialog: {
-				"callback_id": "edited_code",
-				"title": "Edit Discount Code",
-				"submit_label": "Save & Approve",
-				"state": JSON.stringify({
-					id,
-					response_url,
-					trigger_id
-				}),
-				"elements": [
-					{
-						"type": "text",
-						"label": "Discount Code",
-						"name": "discount_code",
-						value: storedData.code
-					}
-				]
-			}
-		}
-
-		fetch(`https://slack.com/api/dialog.open?trigger_id=${trigger_id}`, {
-			method: 'post',
-			body: JSON.stringify(form),
-			headers: {
-				"Content-Type": "application/json; charset=utf-8",
-				"Authorization": `Bearer ${process.env.SLACK_TOKEN}`
-			}
-		})
+		await createSlackDialog(id, response_url, trigger_id, storedData.code)
 	}
 }
 

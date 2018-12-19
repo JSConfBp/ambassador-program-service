@@ -75,16 +75,6 @@ server.route({
     handler: googleAuthHandler
 });
 
-
-server.route({
-    method: 'POST',
-	path: '/google-token',
-	options: {
-		cors: true
-	},
-    handler: googleTokenHandler
-});
-
 const g = require('./saveToSpreadSheet')
 
 server.route({
