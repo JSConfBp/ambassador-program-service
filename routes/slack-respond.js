@@ -19,7 +19,7 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 
 	const discountLink = await titoCreateDiscount(data)
 	data.link = discountLink
-	await server.methods.redisSet(data.id, storedData)
+	await server.methods.redisSet(data.id, data)
 
 	try {
 
