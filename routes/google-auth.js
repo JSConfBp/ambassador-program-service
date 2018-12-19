@@ -8,7 +8,7 @@ module.exports = async (request, h) => {
 
 	const formData = querystring.stringify({
 		'code': code,
-		'redirect_uri': 'https://ambassador-program-service.herokuapp.com/google-token',
+		'redirect_uri': 'https://ambassador-program-service.herokuapp.com/google-token', // /google-auth
 		'client_id': process.env.GOOGLE_CLIENTID,
 		'client_secret': process.env.GOOGLE_SECRET,
 		'grant_type': 'authorization_code',

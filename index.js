@@ -13,6 +13,7 @@ const port = process.env.PORT
 const registerRouteHandler = require('./routes/register')
 const slackRespondRouteHandler = require('./routes/slack-respond')
 const googleAuthHandler = require('./routes/google-auth')
+const googleTokenHandler = require('./routes/google-token')
 
 const server = Hapi.server({
     port,
@@ -62,11 +63,21 @@ server.route({
 
 server.route({
     method: 'GET',
-	path: '/google-api-auth',
+	path: '/google-auth',
 	options: {
 		cors: true
 	},
     handler: googleAuthHandler
+});
+
+
+server.route({
+    method: 'POST',
+	path: '/google-token',
+	options: {
+		cors: true
+	},
+    handler: googleTokenHandler
 });
 
 const g = require('./saveToSpreadSheet')

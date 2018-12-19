@@ -44,7 +44,7 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
 	const authParams = new URLSearchParams({
 		prompt: 'consent',
 		response_type: 'code',
-		redirect_uri: 'https://ambassador-program-service.herokuapp.com/google-api-auth',
+		redirect_uri: 'https://ambassador-program-service.herokuapp.com/google-auth',
 		client_id: process.env.GOOGLE_CLIENTID,
 		scope: 'https://spreadsheets.google.com/feeds/',
 		access_type: 'offline'
