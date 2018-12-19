@@ -36,6 +36,9 @@ module.exports = async (request, h) => {
 
 	for (save of unsaved) {
 		const data = await server.methods.redisGet(save.id)
+
+		console.log(save);
+
 		await saveToSpreadSheet(server, data)
 
 		// send responses to slack
