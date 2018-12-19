@@ -1,28 +1,28 @@
 const fetch = require('isomorphic-unfetch')
-const FormData = require('form-data')
+const querystring = require('querystring')
 
 module.exports = async (request, h) => {
-	const { server, payload, query: { code, scope } } = request
+	const { query: { code, scope } } = request
 
 	console.log(code, scope);
 
-	const form = new FormData();
+	const formData = querystring.stringify({
+		'code': code,
+		'redirect_uri': 'https://ambassador-program-service.herokuapp.com/google-token',
+		'client_id': process.env.GOOGLE_CLIENTID,
+		'client_secret': process.env.GOOGLE_SECRET,
+		'grant_type': 'authorization_code'
+	})
 
-	form.append('code', code)
-	form.append('redirect_uri', 'https://ambassador-program-service.herokuapp.com/google-token')
-	form.append('client_id', process.env.GOOGLE_CLIENTID)
-	form.append('client_secret', process.env.GOOGLE_SECRET)
-	form.append('grant_type', 'authorization_code')
 
-
-	console.log(form.toString());
+	console.log(formData);
 
 	const res = await fetch('https://www.googleapis.com/oauth2/v4/token', {
 		method: 'post',
 		headers: {
 			"Content-Type": "application/x-www-form-urlencoded"
 		},
-		body: form
+		body: formData
 	})
 
 	console.log(res);
