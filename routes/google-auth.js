@@ -1,8 +1,9 @@
 const fetch = require('isomorphic-unfetch')
 const querystring = require('querystring')
+const saveToSpreadSheet = require('../saveToSpreadSheet')
 
 module.exports = async (request, h) => {
-	const { query: { code, scope } } = request
+	const { server, query: { code, scope } } = request
 	const formData = querystring.stringify({
 		'code': code,
 		'redirect_uri': 'https://ambassador-program-service.herokuapp.com/google-auth',
@@ -23,7 +24,22 @@ module.exports = async (request, h) => {
 		body: formData
 	})
 
-	console.log(await res.text());
+	const tokens = await res.json()
+
+	console.log(tokens);
+
+	await server.methods.redisSet('google_refresh_token', tokens.refresh_token)
+	await server.methods.redisSet('google_access_token', tokens.access_token)
+	await server.methods.redisExpire('google_access_token', tokens.expires_in)
+
+	const unsaved = await server.methods.redisGet('unsaved')
+
+	for (save of unsaved) {
+		const data = await server.methods.redisGet(save.id)
+		await saveToSpreadSheet(server, data)
+
+		// send responses to slack
+	}
 
 	return ''
 }

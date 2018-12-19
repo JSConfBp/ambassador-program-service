@@ -22,7 +22,12 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 	//await server.methods.redisSet(data.id, storedData)
 
 	try {
-		await saveToSpreadSheet(data)
+
+// try to save
+// no token? refresh
+// no / failed refresh? auth
+
+		await saveToSpreadSheet(server, data)
 		await fetch(response_url, {
 			method: 'post',
 			body: JSON.stringify(slackData)

@@ -24,7 +24,7 @@
     "googleapis": "^36.0.0",
     "hapi": "^17.8.1",
     "isomorphic-unfetch": "^3.0.0",
-    "nodemon": "^1.18.8",
+    "nodemon": "^1.18.9",
     "redis": "^2.8.0",
     "uuid": "^3.3.2"
   },

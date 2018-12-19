@@ -1,13 +1,24 @@
 const fetch = require('isomorphic-unfetch')
 const { google } = require('googleapis');
 
-module.exports = async function (data) {
+module.exports = async function (server, data) {
+
+
+	//await server.methods.redisSet('google_refresh_token', tokens.refresh_token)
+	const token = await server.methods.redisGet('google_access_token')
+
+	if (!token) {
+		// refresh!
+		throw new Error('Need google auth')
+	}
+
 	const sheets = google.sheets({
 		version: 'v4',
-		auth: process.env.GOOGLE_API_KEY
+		auth: token
 	});
 
-	throw new Error('Need google auth')
+console.log(data);
+
 
 	let values = [
 		[

@@ -31,6 +31,7 @@ if(process.env.NODE_ENV !== "production") {
 }
 const redisSet = promisify(redisClient.set).bind(redisClient)
 const redisGet = promisify(redisClient.get).bind(redisClient)
+const redisExpire = promisify(redisClient.expire).bind(redisClient)
 
 server.method({
     name: 'redisSet',
@@ -40,6 +41,11 @@ server.method({
 server.method({
     name: 'redisGet',
     method: async (id) => JSON.parse(await redisGet(id))
+});
+
+server.method({
+    name: 'redisExpire',
+    method: async (id) => await redisExpire(id)
 });
 
 server.route({
@@ -59,7 +65,6 @@ server.route({
 	},
     handler: slackRespondRouteHandler
 });
-
 
 server.route({
     method: 'GET',
