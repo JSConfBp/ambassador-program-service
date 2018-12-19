@@ -32,11 +32,17 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 		data.link = discountLink
 		await server.methods.redisSet(data.id, data)
 	} catch (e) {
-		// discount code already taken
-		await createSlackDialog(data.id, response_url,trigger_id, data.code, {
-			title: "This code is already created, please update",
-			submit_label: "Update & Approve"
-		})
+
+		console.log(e);
+
+		if (e.code && e.code === 'ERR_TITO_CODE_TAKEN') {
+			// discount code already taken
+			await createSlackDialog(data.id, response_url,trigger_id, data.code, {
+				title: "This code is already created, please update",
+				submit_label: "Update & Approve"
+			})
+		}
+
 		return;
 	}
 
