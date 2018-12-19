@@ -28,11 +28,18 @@ module.exports = async (request, h) => {
 
 	console.log(tokens);
 
+try {
 	await server.methods.redisSet('google_refresh_token', tokens.refresh_token)
 	await server.methods.redisSet('google_access_token', tokens.access_token)
 	await server.methods.redisExpire('google_access_token', tokens.expires_in)
+} catch (e) {
+	console.log(e)
+}
 
 	const unsaved = await server.methods.redisGet('unsaved')
+
+console.log(unsaved);
+
 
 	for (save of unsaved) {
 		const data = await server.methods.redisGet(save.id)
