@@ -3,19 +3,16 @@ const querystring = require('querystring')
 
 module.exports = async (request, h) => {
 	const { query: { code, scope } } = request
-
-	console.log(code, scope);
-
 	const formData = querystring.stringify({
 		'code': code,
-		'redirect_uri': 'https://ambassador-program-service.herokuapp.com/google-token', // /google-auth
+		'redirect_uri': 'https://ambassador-program-service.herokuapp.com/google-auth',
 		'client_id': process.env.GOOGLE_CLIENTID,
 		'client_secret': process.env.GOOGLE_SECRET,
 		'grant_type': 'authorization_code',
 		'scope': ''
 	})
 
-
+	console.log(code, scope);
 	console.log(formData);
 
 	const res = await fetch('https://www.googleapis.com/oauth2/v4/token', {
