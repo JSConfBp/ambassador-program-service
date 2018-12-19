@@ -5,19 +5,27 @@ module.exports = async function (server, data) {
 
 
 	//await server.methods.redisSet('google_refresh_token', tokens.refresh_token)
-	const token = await server.methods.redisGet('google_access_token')
+	const tokens = await server.methods.redisGet('google_tokens')
 
-console.log(token);
 
-	if (!token) {
+	const oauth2Client = new google.auth.OAuth2(
+		process.env.GOOGLE_CLIENTID,
+		process.env.GOOGLE_SECRET,
+		'https://ambassador-program-service.herokuapp.com/google-auth'
+	  );
+
+	oauth2Client.setCredentials(tokens)
+
+console.log(tokens);
+
+	if (!tokens) {
 		// refresh!
 		throw new Error('Missing Google Auth Token')
 	}
+
 	var sheets = google.sheets('v4');
 
-
 console.log(data);
-
 
 	let values = [
 		[
@@ -35,7 +43,7 @@ console.log(data);
 			range: process.env.GOOGLE_SPREADSHEET_A1,
 			valueInputOption: 'RAW',
 			resource,
-			auth: token,
+			auth: oauth2Client,
 		}, (err, result) => {
 			console.log(err)
 			if (err) return reject(err)

@@ -29,9 +29,7 @@ module.exports = async (request, h) => {
 	console.log(tokens);
 
 try {
-	await server.methods.redisSet('google_refresh_token', tokens.refresh_token)
-	await server.methods.redisSet('google_access_token', tokens.access_token)
-	await server.methods.redisExpire('google_access_token', tokens.expires_in)
+	await server.methods.redisSet('google_tokens', tokens)
 } catch (e) {
 	console.log(e)
 }
