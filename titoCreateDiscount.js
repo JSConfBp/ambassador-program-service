@@ -26,7 +26,8 @@ module.exports = async function(data) {
 	})
 
 	const responseData = await response.json()
-console.log(responseData);
 
-	return responseData.links.self
+	console.log(responseData);
+
+	return responseData.data.links.self
 }
