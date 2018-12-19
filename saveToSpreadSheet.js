@@ -13,11 +13,8 @@ console.log(token);
 		// refresh!
 		throw new Error('Missing Google Auth Token')
 	}
+	var sheets = google.sheets('v4');
 
-	const sheets = google.sheets({
-		version: 'v4',
-		auth: token
-	});
 
 console.log(data);
 
@@ -38,6 +35,7 @@ console.log(data);
 			range: process.env.GOOGLE_SPREADSHEET_A1,
 			valueInputOption: 'RAW',
 			resource,
+			auth: token,
 		}, (err, result) => {
 			console.log(err)
 			if (err) return reject(err)
