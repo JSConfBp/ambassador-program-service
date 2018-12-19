@@ -3,33 +3,27 @@ const { google } = require('googleapis');
 
 module.exports = async function (server, data) {
 
-
-	//await server.methods.redisSet('google_refresh_token', tokens.refresh_token)
 	const tokens = await server.methods.redisGet('google_tokens')
-
-
 	const oauth2Client = new google.auth.OAuth2(
 		process.env.GOOGLE_CLIENTID,
 		process.env.GOOGLE_SECRET,
 		'https://ambassador-program-service.herokuapp.com/google-auth'
 	  );
 
-	oauth2Client.setCredentials(tokens)
-
 	if (!tokens) {
 		// refresh!
 		throw new Error('Missing Google Auth Token')
 	}
 
-	var sheets = google.sheets('v4');
+	oauth2Client.setCredentials(tokens)
 
-	let values = [
+	const sheets = google.sheets('v4');
+	const values = [
 		[
 			data.community, data.city, data.code, data.description, data.name, data.email, data.link || ''
 		]
 	];
-
-	let resource = {
+	const resource = {
 		values,
 	};
 
@@ -41,7 +35,6 @@ module.exports = async function (server, data) {
 			resource,
 			auth: oauth2Client,
 		}, (err, result) => {
-			console.log(err)
 			if (err) return reject(err)
 
 			resolve(result)
