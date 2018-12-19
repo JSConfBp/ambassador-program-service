@@ -1,10 +1,20 @@
 const fetch = require('isomorphic-unfetch')
-const getAction = require('../getAction')
-const createAmbassadorText = require('../createAmbassadorText')
-const titoCreateDiscount = require('../titoCreateDiscount')
-const saveToSpreadSheet = require('../saveToSpreadSheet')
+
+const getAction = require('../lib/getSlackAction')
+const createAmbassadorText = require('../lib/createAmbassadorText')
+const titoCreateDiscount = require('../lib/titoCreateDiscount')
+const saveToSpreadSheet = require('../lib/saveToSpreadSheet')
 
 
+/**
+ *
+ *
+ * @param {*} server
+ * @param {*} response_url
+ * @param {*} trigger_id
+ * @param {*} data
+ * @returns
+ */
 const approveAction = async function (server, response_url, trigger_id, data) {
 	const text = createAmbassadorText(data)
 	const slackData = {
@@ -53,6 +63,13 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 }
 
 
+/**
+ *
+ *
+ * @param {*} response_url
+ * @param {*} trigger_id
+ * @param {*} data
+ */
 const needGoogleAuth = async function (response_url, trigger_id, data) {
 
 	const authParams = new URLSearchParams({
@@ -93,7 +110,12 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
 	})
 }
 
-
+/**
+ *
+ *
+ * @param {*} server
+ * @param {*} data
+ */
 const handleDialogSubmission = async function (server, data) {
 	const { state, submission } = data
 	const { id, trigger_id, response_url } = JSON.parse(state)
@@ -153,6 +175,12 @@ const createSlackDialog = async function (id, response_url, trigger_id, code, op
 }
 
 
+/**
+ *
+ *
+ * @param {*} server
+ * @param {*} data
+ */
 const handleInteractiveMessage = async function (server, data) {
 	const { actions, response_url, trigger_id } = data
 	const action = getAction(actions)
@@ -169,6 +197,13 @@ const handleInteractiveMessage = async function (server, data) {
 }
 
 
+/**
+ *
+ *
+ * @param {*} request
+ * @param {*} h
+ * @returns
+ */
 module.exports = async (request, h) => {
 	const { server } = request
 	const { payload } = request.payload

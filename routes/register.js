@@ -1,8 +1,15 @@
 const uuid = require('uuid/v4')
 const fetch = require('isomorphic-unfetch')
-const getCode = require('../getCode')
-const createAmbassadorText = require('../createAmbassadorText')
+const getCode = require('../lib/getCode')
+const createAmbassadorText = require('../lib/createAmbassadorText')
 
+/**
+ *
+ *
+ * @param {*} request
+ * @param {*} h
+ * @returns
+ */
 module.exports = async (request, h) => {
 
 	console.log(request.payload);
