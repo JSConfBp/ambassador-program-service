@@ -25,7 +25,7 @@ module.exports = async (request, h) => {
 		body: formData
 	})
 
-	console.log(res);
+	console.log(await res.text());
 
 	return ''
 }
