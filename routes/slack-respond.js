@@ -60,9 +60,9 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 			method: 'post',
 			body: JSON.stringify(slackData)
 		})
-		
+
 		console.log('slackMsg');
-		console.log(slackMsg);
+		console.log(await slackMsg.json());
 
 
 
