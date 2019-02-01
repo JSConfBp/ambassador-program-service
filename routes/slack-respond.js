@@ -3,7 +3,7 @@ const fetch = require('isomorphic-unfetch')
 const createSlackDialog = require('../lib/createSlackDialog')
 const getAction = require('../lib/getSlackAction')
 const createAmbassadorText = require('../lib/createAmbassadorText')
-const createAmbassadorMail = equire('../lib/createAmbassadorMail')
+const createAmbassadorMail = require('../lib/createAmbassadorMail')
 const titoCreateDiscount = require('../lib/titoCreateDiscount')
 const saveToSpreadSheet = require('../lib/saveToSpreadSheet')
 
