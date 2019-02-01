@@ -3,6 +3,7 @@ const fetch = require('isomorphic-unfetch')
 const createSlackDialog = require('../lib/createSlackDialog')
 const getAction = require('../lib/getSlackAction')
 const createAmbassadorText = require('../lib/createAmbassadorText')
+const createAmbassadorMail = equire('../lib/createAmbassadorMail')
 const titoCreateDiscount = require('../lib/titoCreateDiscount')
 const saveToSpreadSheet = require('../lib/saveToSpreadSheet')
 
@@ -16,7 +17,7 @@ const saveToSpreadSheet = require('../lib/saveToSpreadSheet')
  * @param {*} data
  * @returns
  */
-const approveAction = async function (server, response_url, trigger_id, data) {
+const approveAction = async function (server, response_url, trigger_id, data, channel, ts) {
 	const text = createAmbassadorText(data)
 	const slackData = {
 		"text": `*A new Ambassador has been _approved_!* \n\n${text}`,
@@ -34,7 +35,7 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 		await server.methods.redisSet(data.id, data)
 	} catch (e) {
 
-		console.log(e);
+		console.error(e);
 
 		if (e.code && e.code === 'ERR_TITO_CODE_TAKEN') {
 			// discount code already taken
@@ -64,6 +65,20 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 		console.log('slackMsg');
 		console.log(await slackMsg.json());
 
+		const threadData = {
+			thread_ts: ts,
+			text: createAmbassadorMail(data),
+			channel: channel.id
+		}
+		const thread = await fetch('https://slack.com/api/chat.postMessage', {
+			method: 'post',
+			body: JSON.stringify(threadData),
+			headers: {
+				"Content-Type": "application/json; charset=utf-8",
+				"Authorization": `Bearer ${process.env.SLACK_TOKEN}`
+			}
+		})
+		console.log(await thread.json());
 
 
 	} catch (e) {
@@ -150,19 +165,17 @@ const handleDialogSubmission = async function (server, data) {
  * @param {*} data
  */
 const handleInteractiveMessage = async function (server, data) {
-	const { actions, response_url, trigger_id } = data
+	const { actions, response_url, trigger_id , channel, message_ts } = data
 	const action = getAction(actions)
 	const id = action.value
 	const storedData = await server.methods.redisGet(id)
 
 	if (action.name === 'approve_code') {
-		await approveAction(server, response_url, trigger_id, storedData)
+		await approveAction(server, response_url, trigger_id, storedData, channel, message_ts)
 	}
 
 	if (action.name === 'edit_code') {
 		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code)
-
-		console.log(await resp.json());
 	}
 }
 
@@ -180,7 +193,7 @@ module.exports = async (request, h) => {
 
 	const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
 
-	console.log(data);
+	//console.log(data);
 
 	const { type } = data
 
