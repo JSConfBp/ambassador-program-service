@@ -56,10 +56,16 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 // no / failed refresh? auth
 
 		await saveToSpreadSheet(server, data)
-		await fetch(response_url, {
+		const slackMsg = await fetch(response_url, {
 			method: 'post',
 			body: JSON.stringify(slackData)
 		})
+		
+		console.log('slackMsg');
+		console.log(slackMsg);
+
+
+
 	} catch (e) {
 		const unsaved = (await server.methods.redisGet('unsaved')) || []
 		unsaved.push({
