@@ -38,10 +38,11 @@ const approveAction = async function (server, response_url, trigger_id, data) {
 
 		if (e.code && e.code === 'ERR_TITO_CODE_TAKEN') {
 			// discount code already taken
-			const resp = await createSlackDialog(data.id, response_url,trigger_id, data.code, {
+			const resp = await createSlackDialog(data.id, response_url, trigger_id, data.code, {
 				title: "This code is already created, please update",
 				submit_label: "Update & Approve"
 			})
+
 			console.log(resp);
 		}
 
@@ -154,8 +155,8 @@ const handleInteractiveMessage = async function (server, data) {
 
 	if (action.name === 'edit_code') {
 		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code)
-		console.log(resp);
 
+		console.log(await resp.json());
 	}
 }
 
