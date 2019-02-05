@@ -15,6 +15,7 @@ const processUnsaved = async (server) => {
 	for (save of unsaved) {
 		const data = await server.methods.redisGet(save.id)
 
+		// trigger_id, id
 		console.log(save);
 
 		await saveToSpreadSheet(server, data)

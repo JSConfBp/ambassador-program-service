@@ -32,13 +32,15 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 	try {
 		const discountLink = await titoCreateDiscount(data)
 		data.link = discountLink
-		await server.methods.redisSet(data.id, data)
+		await server.methods.redisSet(data.id, {data, channel, ts})
 	} catch (e) {
 
 		console.error(e);
 
 		if (e.code && e.code === 'ERR_TITO_CODE_TAKEN') {
+
 			// discount code already taken
+			// TODO not appearing
 			const resp = await createSlackDialog(data.id, response_url, trigger_id, data.code, {
 				title: "This code is already created, please update",
 				submit_label: "Update & Approve"
@@ -57,6 +59,9 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 // no / failed refresh? auth
 
 		await saveToSpreadSheet(server, data)
+
+
+
 		const slackMsg = await fetch(response_url, {
 			method: 'post',
 			body: JSON.stringify(slackData)
