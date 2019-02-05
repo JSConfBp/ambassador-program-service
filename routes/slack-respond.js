@@ -60,8 +60,6 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 
 		await saveToSpreadSheet(server, data)
 
-
-
 		const slackMsg = await fetch(response_url, {
 			method: 'post',
 			body: JSON.stringify(slackData)
