@@ -161,14 +161,14 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
  */
 const handleDialogSubmission = async function (server, data) {
 	const { state, submission } = data
-	const { id, trigger_id, response_url, channel_id} = JSON.parse(state)
+	const { id, trigger_id, response_url, channel_id, message_ts} = JSON.parse(state)
 
 	const storedData = await server.methods.redisGet(id)
 
 	storedData.code = submission.discount_code
 	await server.methods.redisSet(id, storedData)
 
-	await approveAction(server, response_url, trigger_id, storedData, { id: channel_id })
+	await approveAction(server, response_url, trigger_id, storedData, { id: channel_id }, message_ts)
 }
 
 /**
@@ -190,7 +190,7 @@ const handleInteractiveMessage = async function (server, data) {
 	if (action.name === 'edit_code') {
 		console.log('handleInteractiveMessage', channel, data);
 
-		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code, {}, channel)
+		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code, {}, channel, message_ts)
 	}
 }
 
