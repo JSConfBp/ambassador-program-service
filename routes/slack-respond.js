@@ -44,7 +44,7 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 			const resp = await createSlackDialog(data.id, response_url, trigger_id, data.code, {
 				title: "This code is already created, please update",
 				submit_label: "Update & Approve"
-			})
+			}, channel)
 
 			console.log(resp);
 		}
@@ -188,6 +188,8 @@ const handleInteractiveMessage = async function (server, data) {
 	}
 
 	if (action.name === 'edit_code') {
+		console.log('handleInteractiveMessage', channel, data);
+
 		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code, channel)
 	}
 }
