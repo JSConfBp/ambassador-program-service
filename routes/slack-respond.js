@@ -161,14 +161,14 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
  */
 const handleDialogSubmission = async function (server, data) {
 	const { state, submission } = data
-	const { id, trigger_id, response_url, channel} = JSON.parse(state)
+	const { id, trigger_id, response_url, channel_id} = JSON.parse(state)
 
 	const storedData = await server.methods.redisGet(id)
 
 	storedData.code = submission.discount_code
 	await server.methods.redisSet(id, storedData)
 
-	await approveAction(server, response_url, trigger_id, storedData, channel)
+	await approveAction(server, response_url, trigger_id, storedData, { id: channel_id })
 }
 
 /**
