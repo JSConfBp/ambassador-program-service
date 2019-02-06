@@ -60,6 +60,18 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 
 		await saveToSpreadSheet(server, data)
 
+	} catch (e) {
+		const unsaved = (await server.methods.redisGet('unsaved')) || []
+		unsaved.push({
+			trigger_id,
+			id: data.id
+		})
+		await server.methods.redisSet('unsaved', unsaved)
+		await needGoogleAuth(response_url, trigger_id, data)
+	}
+
+	try {
+
 		const slackMsg = await fetch(response_url, {
 			method: 'post',
 			body: JSON.stringify(slackData)
@@ -82,17 +94,11 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 			}
 		})
 		console.log(await thread.json());
-
-
 	} catch (e) {
-		const unsaved = (await server.methods.redisGet('unsaved')) || []
-		unsaved.push({
-			trigger_id,
-			id: data.id
-		})
-		await server.methods.redisSet('unsaved', unsaved)
-		await needGoogleAuth(response_url, trigger_id, data)
+		console.error('what is going on here?');
+		console.error(e);
 	}
+
 }
 
 
