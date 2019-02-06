@@ -71,7 +71,6 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 	}
 
 	try {
-
 		const slackMsg = await fetch(response_url, {
 			method: 'post',
 			body: JSON.stringify(slackData)
@@ -85,6 +84,11 @@ const approveAction = async function (server, response_url, trigger_id, data, ch
 			text: createAmbassadorMail(data),
 			channel: channel.id
 		}
+
+		if (channel && channel.id) {
+			threadData
+		}
+
 		const thread = await fetch('https://slack.com/api/chat.postMessage', {
 			method: 'post',
 			body: JSON.stringify(threadData),
@@ -157,14 +161,14 @@ const needGoogleAuth = async function (response_url, trigger_id, data) {
  */
 const handleDialogSubmission = async function (server, data) {
 	const { state, submission } = data
-	const { id, trigger_id, response_url } = JSON.parse(state)
+	const { id, trigger_id, response_url, channel} = JSON.parse(state)
 
 	const storedData = await server.methods.redisGet(id)
 
 	storedData.code = submission.discount_code
 	await server.methods.redisSet(id, storedData)
 
-	await approveAction(server, response_url, trigger_id, storedData)
+	await approveAction(server, response_url, trigger_id, storedData, channel)
 }
 
 /**
@@ -184,7 +188,7 @@ const handleInteractiveMessage = async function (server, data) {
 	}
 
 	if (action.name === 'edit_code') {
-		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code)
+		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code, channel)
 	}
 }
 
