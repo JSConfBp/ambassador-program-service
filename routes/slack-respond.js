@@ -190,7 +190,7 @@ const handleInteractiveMessage = async function (server, data) {
 	if (action.name === 'edit_code') {
 		console.log('handleInteractiveMessage', channel, data);
 
-		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code, channel)
+		const resp = await createSlackDialog(id, response_url, trigger_id, storedData.code, {}, channel)
 	}
 }
 
